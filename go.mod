@@ -1,5 +1,3 @@
-module seqquery.de/envoy
+module github.com/utubun/yenta
 
 go 1.22.2
-
-require github.com/rabbitmq/amqp091-go v1.9.0
