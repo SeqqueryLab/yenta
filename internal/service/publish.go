@@ -7,7 +7,7 @@ import (
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
-	"seqquery.de/yenta/internal/model"
+	"github.com/utubun/yenta/internal/model"
 )
 
 func Send(s *Service, err model.YentaError, exchange model.Exchange, queue model.Queue, rout string, worker func(map[string]interface{})) func() {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"seqquery.de/yenta/internal/model"
+	"github.com/utubun/yenta/internal/model"
 )
 
 func TestYenta(t *testing.T) {

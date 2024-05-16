@@ -1,8 +1,8 @@
 package yenta
 
 import (
-	"seqquery.de/yenta/internal/model"
-	"seqquery.de/yenta/internal/service"
+	"github.com/utubun/yenta/internal/model"
+	"github.com/utubun/yenta/internal/service"
 )
 
 type Yenta interface {

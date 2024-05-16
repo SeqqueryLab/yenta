@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"seqquery.de/yenta"
-	"seqquery.de/yenta/internal/model"
-	"seqquery.de/yenta/internal/util"
+	"github.com/utubun/yenta"
+	"github.com/utubun/yenta/internal/model"
+	"github.com/utubun/yenta/internal/util"
 )
 
 func main() {
