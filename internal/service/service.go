@@ -4,7 +4,7 @@ import (
 	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
-	"seqquery.de/yenta/internal/model"
+	"github.com/utubun/yenta/internal/model"
 )
 
 type Service struct {

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"seqquery.de/yenta/internal/model"
+	"github.com/utubun/yenta/internal/model"
 )
 
 func subscribe(s *Service, err model.YentaError, exchange model.Exchange, queue model.Queue, rout string, worker func(map[string]interface{})) func() {
