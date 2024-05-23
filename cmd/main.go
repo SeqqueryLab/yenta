@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/utubun/yenta"
-	"github.com/utubun/yenta/internal/service"
 	"github.com/utubun/yenta/internal/util"
 )
 
@@ -40,14 +39,14 @@ func main() {
 		log.Printf("Can not create queue: %s", err)
 	}
 
-	cfg := service.Config{
+	cfg := yenta.Config{
 		{
-			Consumer: service.Consumer{*nums, *qfb, "fibonacci", fibonacci},
-			Producer: service.Producer{*logs, *quo, "", logger},
+			Consumer: yenta.Consumer{Exchange: nums, Queue: qfb, Rout: "fibonacci", Worker: fibonacci},
+			Producer: yenta.Producer{Exchange: logs, Queue: quo, Rout: "", Worker: logger},
 		},
 		{
-			Consumer: service.Consumer{*nums, *qsq, "squares", square},
-			Producer: service.Producer{*logs, *quo, "", logger},
+			Consumer: yenta.Consumer{Exchange: nums, Queue: qsq, Rout: "squares", Worker: square},
+			Producer: yenta.Producer{Exchange: logs, Queue: quo, Rout: "", Worker: logger},
 		},
 	}
 

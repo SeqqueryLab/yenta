@@ -12,27 +12,6 @@ type Service struct {
 	err  *model.YentaError
 }
 
-type Consumer struct {
-	Exchange model.Exchange
-	Queue    model.Queue
-	Rout     string
-	Worker   model.Worker
-}
-
-type Producer struct {
-	Exchange model.Exchange
-	Queue    model.Queue
-	Rout     string
-	Worker   model.Worker
-}
-
-type WorkItem struct {
-	Consumer Consumer
-	Producer Producer
-}
-
-type Config []WorkItem
-
 func New(url string) (*Service, error) {
 	var s Service
 	err := s.dial(url)
@@ -62,7 +41,7 @@ func (s *Service) openChannel() (*amqp.Channel, error) {
 	return s.conn.Channel()
 }
 
-func (s *Service) Add(config Config) {
+func (s *Service) Add(config model.Config) {
 	log.Println("Routing the service")
 	for _, w := range config {
 		out := subscribe(s, w.Consumer.Exchange, w.Consumer.Queue, w.Consumer.Rout, w.Consumer.Worker)
