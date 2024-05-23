@@ -261,7 +261,6 @@ func publish(s *Service, exchange Exchange, queue Queue, rout string, worker Wor
 	go func() {
 		for m := range out {
 			args, _ := json.Marshal(m)
-			log.Printf("Produced the message: %s\n", m)
 			err = ch.PublishWithContext(
 				ctx,
 				exchange.Name(),
@@ -277,6 +276,7 @@ func publish(s *Service, exchange Exchange, queue Queue, rout string, worker Wor
 			if err != nil {
 				log.Printf("Error publishing the message: %s\n", err)
 			}
+			log.Println("Message emitted")
 		}
 	}()
 }
