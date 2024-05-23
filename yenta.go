@@ -246,10 +246,10 @@ func publish(s *Service, exchange Exchange, queue Queue, rout string, worker Wor
 		*s.err <- err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Second)
 	defer cancel()
 
-	var out chan interface{}
+	out := make(chan interface{})
 
 	go func() {
 		for arg := range in {
@@ -269,8 +269,9 @@ func publish(s *Service, exchange Exchange, queue Queue, rout string, worker Wor
 				false,
 				false,
 				amqp.Publishing{
-					ContentType: "application/json",
-					Body:        args,
+					DeliveryMode: amqp.Persistent,
+					ContentType:  "application/json",
+					Body:         args,
 				},
 			)
 			if err != nil {
