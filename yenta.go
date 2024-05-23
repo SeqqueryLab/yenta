@@ -37,26 +37,17 @@ func NewExchange(name, kind string, durable, autoDelete, internal, noWait bool) 
 	return &e, nil
 }
 
-type Queue interface{}
+type Queue interface {
+	Name() string
+	Durable() bool
+	AutoDelete() bool
+	Exclusive() bool
+	NoWait() bool
+}
 
-func NewQueue(name string, durable, autoDelete, exclusive, noWait bool) (Queue, error) {
+func NewQueue(name string, durable, autoDelete, exclusive, noWait bool) (*model.Queue, error) {
 	q := model.NewQueue(name, durable, autoDelete, exclusive, noWait)
-	return q, nil
+	return &q, nil
 }
 
-type WorkItem struct {
-	Subscriber struct {
-		exchange Exchange
-		queue    Queue
-		rout     string
-		worker   model.Worker
-	}
-	Consumer struct {
-		exxchange Exchange
-		queue     Queue
-		rout      string
-		worker    model.Worker
-	}
-}
-
-type Config []WorkItem
+type Config interface{ service.Config }

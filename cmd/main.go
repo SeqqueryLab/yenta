@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/utubun/yenta"
-	"github.com/utubun/yenta/internal/model"
 	"github.com/utubun/yenta/internal/service"
 	"github.com/utubun/yenta/internal/util"
 )
@@ -43,12 +42,12 @@ func main() {
 
 	cfg := service.Config{
 		{
-			Consumer: service.Consumer{*nums, qfb.(model.Queue), "fibonacci", fibonacci},
-			Producer: service.Producer{*logs, quo.(model.Queue), "", logger},
+			Consumer: service.Consumer{*nums, *qfb, "fibonacci", fibonacci},
+			Producer: service.Producer{*logs, *quo, "", logger},
 		},
 		{
-			Consumer: service.Consumer{*nums, qsq.(model.Queue), "squares", square},
-			Producer: service.Producer{*logs, quo.(model.Queue), "", logger},
+			Consumer: service.Consumer{*nums, *qsq, "squares", square},
+			Producer: service.Producer{*logs, *quo, "", logger},
 		},
 	}
 
