@@ -47,8 +47,9 @@ func TestYenta(t *testing.T) {
 
 		q := model.NewQueue("logs", false, true, false, false)
 
-		f := func(map[string]interface{}) {
+		f := func(map[string]interface{}) map[string]interface{} {
 			fmt.Printf("Done")
+			return nil
 		}
 
 		s.Subscribe(e, q, "user", f)

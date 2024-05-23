@@ -6,7 +6,7 @@ import (
 )
 
 type Yenta interface {
-	Subscribe(exchange model.Exchange, queue model.Queue, rout string, worker func(map[string]interface{}))
+	Add(config service.Config)
 	Run() error
 }
 
@@ -43,3 +43,20 @@ func NewQueue(name string, durable, autoDelete, exclusive, noWait bool) (Queue, 
 	q := model.NewQueue(name, durable, autoDelete, exclusive, noWait)
 	return q, nil
 }
+
+type WorkItem struct {
+	Subscriber struct {
+		exchange Exchange
+		queue    Queue
+		rout     string
+		worker   model.Worker
+	}
+	Consumer struct {
+		exxchange Exchange
+		queue     Queue
+		rout      string
+		worker    model.Worker
+	}
+}
+
+type Config []WorkItem
