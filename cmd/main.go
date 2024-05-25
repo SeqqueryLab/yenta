@@ -1,59 +1,29 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
-	"time"
 
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/utubun/yenta"
-	"github.com/utubun/yenta/internal/util"
+	"github.com/utubun/yenta/internal/model"
 )
 
 func main() {
-	s, err := yenta.New("amqp://guest:guest@localhost:5672/")
-	if err != nil {
-		log.Printf("Can not create yenta service: %s", err)
-	}
+	s := yenta.NewService("amqp://guest:guest@localhost:5672/")
+	log.Println("New service is created")
 
-	logs, err := yenta.NewExchange("logs", "topic", false, false, false, true)
-	if err != nil {
-		log.Printf("Can not declare exchange: %s", err)
-	}
-	nums, err := yenta.NewExchange("numbers", "topic", false, false, false, true)
-	if err != nil {
-		log.Printf("Can not declare exchange: %s", err)
-	}
+	//logs := yenta.NewExchange("logs", "fanout", true, false, false, false, nil)
+	nums := yenta.NewExchange("numbers", "topic", true, false, false, true, nil)
 
-	qsq, err := yenta.NewQueue("squares", false, false, false, false)
-	if err != nil {
-		log.Printf("Can not declare queue: %s", err)
-	}
+	//qsq := yenta.NewQueue("squares", true, false, false, false, nil)
 
-	qfb, err := yenta.NewQueue("fibonacci", false, false, false, false)
-	if err != nil {
-		log.Printf("Can not declare queue: %s", err)
-	}
+	qfb := yenta.NewQueue("fibonacci", true, false, false, false, nil)
 
-	quo, err := yenta.NewQueue("log", false, true, false, false)
-	if err != nil {
-		log.Printf("Can not create queue: %s", err)
-	}
+	s.Worker(nums.(model.Exchange), qfb.(model.Queue), []string{"log", "fibonacci"}, logger)
 
-	cfg := yenta.Config{
-		{
-			Consumer: yenta.Consumer{Exchange: nums, Queue: qfb, Rout: "fibonacci", Worker: fibonacci},
-			Producer: yenta.Producer{Exchange: logs, Queue: quo, Rout: "", Worker: logger},
-		},
-		{
-			Consumer: yenta.Consumer{Exchange: nums, Queue: qsq, Rout: "squares", Worker: square},
-			Producer: yenta.Producer{Exchange: logs, Queue: quo, Rout: "", Worker: logger},
-		},
-	}
-
-	s.Add(cfg)
-
-	fmt.Printf("The service: %+v\n", s)
-	err = s.Run()
+	err := s.Run()
 	fmt.Println(err)
 }
 
@@ -70,17 +40,16 @@ func square(arg map[string]interface{}) map[string]interface{} {
 	return map[string]interface{}{"n": n}
 }
 
-func logger(arg map[string]interface{}) map[string]interface{} {
+func logger(arg interface{}) interface{} {
+	body := arg.(amqp091.Delivery).Body
 	res := make(map[string]interface{})
 
-	res["time"] = time.Now()
-	res["message"] = "results are ready"
-	res["data"] = arg
-
-	return res
+	json.Unmarshal(body, &res)
+	log.Printf("Logging results: %+v", res)
+	return nil
 }
 
-func fibonacci(arg map[string]interface{}) map[string]interface{} {
+/* func fibonacci(arg interface{}) interface{} {
 	temp := arg["n"]
 	if temp == nil {
 		fmt.Println("error provided data does not contain n")
@@ -94,4 +63,4 @@ func fibonacci(arg map[string]interface{}) map[string]interface{} {
 	log.Printf("Calculated the results: %+v\n", res)
 
 	return map[string]interface{}{"res": res}
-}
+} */
