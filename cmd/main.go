@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
+	"time"
 
 	"github.com/SeqqueryLab/yenta"
+	"github.com/SeqqueryLab/yenta/internal/util"
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -22,21 +25,29 @@ func main() {
 
 	s.Worker(nums, qfb, []string{"log", "fibonacci"}, logger)
 
+	publish := s.Publisher(nums, qfb, []string{"log", "fibonacci"}, true, false)
+
+	go func() {
+		for {
+			n := rand.Intn(35)
+			msg := struct {
+				Name string `json:"name"`
+				N    int    `json:"n"`
+			}{
+				"Publisher",
+				n,
+			}
+
+			err := publish(msg)
+			if err != nil {
+				log.Printf("Error publishing the message: %s", err)
+			}
+			time.Sleep(10 * time.Second)
+		}
+	}()
+
 	err := s.Run()
 	fmt.Println(err)
-}
-
-func square(arg map[string]interface{}) map[string]interface{} {
-	var n float64
-	temp := arg["n"]
-	if temp == nil {
-		fmt.Println("error provided data does not contain n")
-		return nil
-	}
-	n = temp.(float64)
-	n = n * n
-
-	return map[string]interface{}{"n": n}
 }
 
 func logger(arg interface{}) interface{} {
@@ -44,22 +55,10 @@ func logger(arg interface{}) interface{} {
 	res := make(map[string]interface{})
 
 	json.Unmarshal(body, &res)
-	log.Printf("Logging results: %+v", res)
+	fibbo, err := util.Fibonacci(int(res["n"].(float64)))
+	if err != nil {
+		log.Printf("Error: %s", err)
+	}
+	log.Printf("Fibbonaci sequence, is %+v", fibbo)
 	return nil
 }
-
-/* func fibonacci(arg interface{}) interface{} {
-	temp := arg["n"]
-	if temp == nil {
-		fmt.Println("error provided data does not contain n")
-		return nil
-	}
-	n := int(temp.(float64))
-	res, err := util.Fibonacci(n)
-	if err != nil {
-		log.Printf("error calculating the results %s", err)
-	}
-	log.Printf("Calculated the results: %+v\n", res)
-
-	return map[string]interface{}{"res": res}
-} */
