@@ -1,8 +1,8 @@
 package yenta
 
 import (
+	"github.com/SeqqueryLab/yenta/internal/model"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"github.com/utubun/yenta/internal/model"
 )
 
 type Service interface {

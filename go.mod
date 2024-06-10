@@ -1,4 +1,4 @@
-module github.com/utubun/yenta
+module github.com/SeqqueryLab/yenta
 
 go 1.22.2
 

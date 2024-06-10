@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/SeqqueryLab/yenta"
 	"github.com/rabbitmq/amqp091-go"
-	"github.com/utubun/yenta"
 )
 
 func main() {
