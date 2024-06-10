@@ -2,6 +2,8 @@ package model
 
 import (
 	"log"
+
+	"github.com/rabbitmq/amqp091-go"
 )
 
 func Worker(exchange Exchange, queue Queue, key Routing, fun func(arg interface{}) interface{}) func(s *Service) error {
@@ -56,10 +58,10 @@ func Worker(exchange Exchange, queue Queue, key Routing, fun func(arg interface{
 
 		for m := range msg {
 			ack := m.Ack
-			go func() {
+			go func(m amqp091.Delivery) {
 				fun(m)
 				ack(false)
-			}()
+			}(m)
 		}
 
 		return nil

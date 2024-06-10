@@ -16,7 +16,7 @@ func NewService(url string) Service {
 
 type Exchange interface{}
 
-func NewExchange(name, kind string, durable, autoDelete, internal, noWait bool, arg amqp.Table) Exchange {
+func NewExchange(name, kind string, durable, autoDelete, internal, noWait bool, arg amqp.Table) model.Exchange {
 	exchange := model.NewExchange(name, kind, durable, autoDelete, internal, noWait, arg)
 	return exchange
 }
@@ -26,7 +26,7 @@ type Queue interface {
 	Bind(ch *amqp.Channel, exchange *Exchange, routing *Routing) error
 }
 
-func NewQueue(name string, durable, autoDelete, exclusive, noWait bool, args amqp.Table) Queue {
+func NewQueue(name string, durable, autoDelete, exclusive, noWait bool, args amqp.Table) model.Queue {
 	q := model.NewQueue(name, durable, autoDelete, exclusive, noWait, args)
 	return q
 }

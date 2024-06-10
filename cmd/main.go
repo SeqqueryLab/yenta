@@ -7,7 +7,6 @@ import (
 
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/utubun/yenta"
-	"github.com/utubun/yenta/internal/model"
 )
 
 func main() {
@@ -21,7 +20,7 @@ func main() {
 
 	qfb := yenta.NewQueue("fibonacci", true, false, false, false, nil)
 
-	s.Worker(nums.(model.Exchange), qfb.(model.Queue), []string{"log", "fibonacci"}, logger)
+	s.Worker(nums, qfb, []string{"log", "fibonacci"}, logger)
 
 	err := s.Run()
 	fmt.Println(err)
