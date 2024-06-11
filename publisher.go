@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/rabbitmq/amqp091-go"
@@ -11,6 +12,7 @@ import (
 
 func (s *Service) Publisher(exchange Exchange, keys Routing, mandatory, immideate bool) func(m interface{}) error {
 	return func(message interface{}) error {
+		var wg sync.WaitGroup
 		conn := s.Connection()
 		log.Println("Publisher created connection")
 		ch := s.openChannel(conn)
@@ -42,7 +44,9 @@ func (s *Service) Publisher(exchange Exchange, keys Routing, mandatory, immideat
 		}
 
 		for _, key := range keys {
+			wg.Add(1)
 			go func(m interface{}, key string) {
+				defer wg.Done()
 				err = ch.PublishWithContext(
 					ctx,
 					exchange.name,
@@ -64,6 +68,14 @@ func (s *Service) Publisher(exchange Exchange, keys Routing, mandatory, immideat
 
 			}(message, key)
 		}
+
+		go func() {
+			wg.Wait()
+			ch.Close()
+			log.Println("Publisher closed the channel")
+			conn.Close()
+			log.Println("Publisher closed the connection")
+		}()
 
 		return nil
 	}

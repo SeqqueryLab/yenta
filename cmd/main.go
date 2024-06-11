@@ -4,11 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
-	"time"
 
 	"github.com/SeqqueryLab/yenta"
-	"github.com/SeqqueryLab/yenta/internal/util"
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -25,7 +22,7 @@ func main() {
 
 	s.Worker(nums, qfb, []string{"log", "fibonacci"}, logger)
 
-	publish := s.Publisher(nums, []string{"log", "fibonacci"}, true, false)
+	/*publish := s.Publisher(nums, []string{"log", "fibonacci"}, true, false)
 
 	go func() {
 		for {
@@ -44,7 +41,7 @@ func main() {
 			}
 			time.Sleep(10 * time.Second)
 		}
-	}()
+	}()*/
 
 	err := s.Run()
 	fmt.Println(err)
@@ -55,10 +52,10 @@ func logger(arg interface{}) interface{} {
 	res := make(map[string]interface{})
 
 	json.Unmarshal(body, &res)
-	fibbo, err := util.Fibonacci(int(res["n"].(float64)))
-	if err != nil {
-		log.Printf("Error: %s", err)
-	}
-	log.Printf("Fibbonaci sequence, is %+v", fibbo)
+	//fibbo, err := util.Fibonacci(int(res["n"].(float64)))
+	//if err != nil {
+	//	log.Printf("Error: %s", err)
+	//}
+	log.Printf("Logging the results %+v", res)
 	return nil
 }
