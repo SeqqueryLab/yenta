@@ -1,4 +1,4 @@
-package model
+package yenta
 
 import (
 	"errors"
@@ -6,6 +6,10 @@ import (
 )
 
 type Routing []string
+
+func NewRouting(keys []string) *Routing {
+	return &Routing{}
+}
 
 func (b *Routing) Simple() (bool, error) {
 	if len(*b) == 0 {

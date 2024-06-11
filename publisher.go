@@ -1,4 +1,4 @@
-package model
+package yenta
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 )
 
-func (s *Service) Publisher(exchange Exchange, queue Queue, keys Routing, mandatory, immideate bool) func(m interface{}) error {
+func (s *Service) Publisher(exchange Exchange, keys Routing, mandatory, immideate bool) func(m interface{}) error {
 	return func(message interface{}) error {
 		conn := s.Connection()
 		log.Println("Publisher created connection")
