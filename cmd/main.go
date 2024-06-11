@@ -25,7 +25,7 @@ func main() {
 
 	s.Worker(nums, qfb, []string{"log", "fibonacci"}, logger)
 
-	publish := s.Publisher(nums, qfb, []string{"log", "fibonacci"}, true, false)
+	publish := s.Publisher(nums, []string{"log", "fibonacci"}, true, false)
 
 	go func() {
 		for {
