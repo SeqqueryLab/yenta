@@ -22,27 +22,6 @@ func main() {
 
 	s.Worker(nums, qfb, []string{"log", "fibonacci"}, logger)
 
-	/*publish := s.Publisher(nums, []string{"log", "fibonacci"}, true, false)
-
-	go func() {
-		for {
-			n := rand.Intn(35)
-			msg := struct {
-				Name string `json:"name"`
-				N    int    `json:"n"`
-			}{
-				"Publisher",
-				n,
-			}
-
-			err := publish(msg)
-			if err != nil {
-				log.Printf("Error publishing the message: %s", err)
-			}
-			time.Sleep(10 * time.Second)
-		}
-	}()*/
-
 	err := s.Run()
 	fmt.Println(err)
 }
