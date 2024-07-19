@@ -1,0 +1,70 @@
+{
+    "exchange": [
+        {
+            "name": "human numbers",
+            "kind": "direct",
+            "durable": true,
+            "autodelete": false,
+            "internal": false,
+            "nowait": false
+        },
+        {
+            "name": "inhuman numbers",
+            "kind": "topic",
+            "durable": false,
+            "autodelete": false,
+            "internal": false,
+            "nowait": false
+        }
+    ],
+    "queue": [
+        {
+            "name": "pi-queue",
+            "durable": true,
+            "autodelete": false,
+            "exclusive": false,
+            "nowait": false
+        },
+        {
+            "name": "e-queue",
+            "durable": true,
+            "autodelete": false,
+            "exclusive": false,
+            "nowait": false
+        },
+        {
+            "name": "i-queue",
+            "durable": true,
+            "autodelete": false,
+            "exclusive": false,
+            "nowait": false
+        }
+    ],
+    "binding": [
+        {
+            "exchange": "human numbers",
+            "queue": "pi-queue",
+            "keys": ["lovable pi", "amazing pi"]
+        },
+        {
+            "exchange": "human numbers",
+            "queue": "e-queue",
+            "keys": ["sexy e", "hot e"]
+        },
+        {
+            "exchange": "human numbers",
+            "queue": "i-queue",
+            "keys": ["I robot", "I cool"]
+        },
+        {
+            "exchange": "inhuman numbers",
+            "queue": "e-queue",
+            "keys": ["morbid e", "flamable e"]
+        },
+        {
+            "exchange": "inhuman numbers",
+            "queue": "i-queue",
+            "keys": ["I rot", "I crawl"]
+        }
+    ]
+}

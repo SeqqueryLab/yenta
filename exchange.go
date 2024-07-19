@@ -2,18 +2,26 @@ package yenta
 
 import amqp "github.com/rabbitmq/amqp091-go"
 
+// Exchange
 type Exchange struct {
-	name       string
-	kind       string
-	durable    bool
-	autoDelete bool
-	internal   bool
-	noWait     bool
-	arg        amqp.Table
+	Name       string
+	Kind       string
+	Durable    bool
+	AutoDelete bool
+	Internal   bool
+	NoWait     bool
+	Arg        amqp.Table
 }
 
-func NewExchange(name, kind string, durable, autoDelete, internal, noWait bool, arg amqp.Table) Exchange {
-	return Exchange{
+func (s *Service) DeclareExchange(name, kind string, durable, autoDelete, internal, noWait bool, arg amqp.Table) error {
+	// open connection
+	conn := s.connect()
+	// open channel
+	ch := s.channel(conn)
+	// defer on done
+	defer conn.Close()
+	// declare exchange
+	err := ch.ExchangeDeclare(
 		name,
 		kind,
 		durable,
@@ -21,18 +29,21 @@ func NewExchange(name, kind string, durable, autoDelete, internal, noWait bool, 
 		internal,
 		noWait,
 		arg,
-	}
-}
-
-func (e *Exchange) Declare(ch *amqp.Channel) error {
-	err := ch.ExchangeDeclare(
-		e.name,
-		e.kind,
-		e.durable,
-		e.autoDelete,
-		e.internal,
-		e.noWait,
-		e.arg,
 	)
-	return err
+	if err != nil {
+		ch.Close()
+		conn.Close()
+		return err
+	}
+	// store the config values
+	s.exchange[name] = Exchange{
+		Name:       name,
+		Kind:       kind,
+		Durable:    durable,
+		AutoDelete: autoDelete,
+		Internal:   internal,
+		NoWait:     noWait,
+		Arg:        arg,
+	}
+	return nil
 }

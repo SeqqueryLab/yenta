@@ -2,9 +2,12 @@ package yenta
 
 import "fmt"
 
-type YentaError chan error
+type Error chan error
 
-func (err YentaError) Error() string {
-
-	return fmt.Sprintf("yenta error: %s", <-err)
+func (e Error) Error() string {
+	defer close(e)
+	select {
+	case err := <-e:
+		return fmt.Sprintf("%s", err)
+	}
 }

@@ -1,51 +1,65 @@
 package yenta
 
 import (
-	"errors"
-	"log"
+	"fmt"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
+// Queue
 type Queue struct {
-	name       string
-	durable    bool
-	autoDelete bool
-	exclusive  bool
-	noWait     bool
-	arg        amqp.Table
+	Exchange   string
+	Name       string
+	Durable    bool
+	AutoDelete bool
+	Exclusive  bool
+	NoWait     bool
+	Arg        amqp.Table
+	Keys       []string
 }
 
-func NewQueue(name string, durable, autoDelete, exclusive, noWait bool, arg amqp.Table) Queue {
-	return Queue{
+// Declare Queue
+func (s *Service) DeclareQueue(name string, durable, autoDelete, exclusive, noWait bool, arg amqp.Table) error {
+	// open connection
+	conn := s.connect()
+	// open channel
+	ch := s.channel(conn)
+	// defer on done
+	defer conn.Close()
+	// Declare the queue
+	_, err := ch.QueueDeclare(
 		name,
 		durable,
 		autoDelete,
 		exclusive,
 		noWait,
 		arg,
-	}
-}
-
-func (q Queue) Declare(ch *amqp.Channel) (amqp.Queue, error) {
-	res, err := ch.QueueDeclare(
-		q.name,
-		q.durable,
-		q.autoDelete,
-		q.exclusive,
-		q.noWait,
-		q.arg,
 	)
-	return res, err
+	if err != nil {
+		return fmt.Errorf("can not declare the queue %s", err)
+	}
+	s.queue[name] = Queue{
+		Name:       name,
+		Durable:    durable,
+		AutoDelete: autoDelete,
+		Exclusive:  exclusive,
+		NoWait:     noWait,
+		Arg:        arg,
+	}
+	return nil
 }
 
-func (q Queue) Bind(ch *amqp.Channel, exchange Exchange, routing Routing) error {
-	if !(exchange.durable && q.durable) {
-		return errors.New("can not bind queue to exchange: both queue and exchange must be durable")
-	}
-	for _, key := range routing {
-		err := ch.QueueBind(q.name, key, exchange.name, true, nil)
-		log.Printf("Bindied the queue %s, key %s\n", q.name, key)
+// Bind Queue
+func (s *Service) BindQueue(name, exchange string, keys []string, noWait bool, arg amqp.Table) error {
+	// open connection
+	conn := s.connect()
+	//open channel
+	ch := s.channel(conn)
+	// defer on done
+	defer conn.Close()
+	// iterate over keys, and bind the queue to exchange
+	for _, key := range keys {
+		err := ch.QueueBind(name, key, exchange, noWait, arg)
 		if err != nil {
 			return err
 		}

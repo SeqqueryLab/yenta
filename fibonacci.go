@@ -1,8 +1,8 @@
-package util
+package yenta
 
 import "fmt"
 
-func Fibonacci(n int) ([]int, error) {
+func fibonacci(n int) ([]int, error) {
 	if n < 0 {
 		return nil, fmt.Errorf("got %d, want n >= 0", n)
 	}
@@ -14,7 +14,7 @@ func Fibonacci(n int) ([]int, error) {
 	case 2:
 		return []int{0, 1}, nil
 	default:
-		cur, err := Fibonacci(n - 1)
+		cur, err := fibonacci(n - 1)
 		if err != nil {
 			return nil, err
 		}

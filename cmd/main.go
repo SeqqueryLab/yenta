@@ -4,37 +4,57 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/SeqqueryLab/yenta"
-	"github.com/rabbitmq/amqp091-go"
 )
 
 func main() {
-	s := yenta.NewService("amqp://guest:guest@localhost:5672/")
+	s, err := yenta.New("amqp://guest:guest@localhost:5672")
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Println("New service is created")
+	err = s.Configure("internal/assets/config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Service: %+v\n", s)
 
-	//logs := yenta.NewExchange("logs", "fanout", true, false, false, false, nil)
-	nums := yenta.NewExchange("numbers", "topic", true, false, false, true, nil)
+	go func() {
+		for {
+			body, _ := json.Marshal(struct {
+				Time time.Time
+				Text string
+			}{
+				Time: time.Now(),
+				Text: "Hi there",
+			})
+			err = s.Post("human numbers", []string{"hot e", "sexy e", "I rot"}, false, false, "text/plain", body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("Sent message: %s\n", string(body))
+			time.Sleep(5 * time.Second)
+		}
+	}()
 
-	//qsq := yenta.NewQueue("squares", true, false, false, false, nil)
-
-	qfb := yenta.NewQueue("fibonacci", true, false, false, false, nil)
-
-	s.Worker(nums, qfb, []string{"log", "fibonacci"}, logger)
-
-	err := s.Run()
-	fmt.Println(err)
+	err = s.Get("main", "e-queue", true, false, false, false, nil, logger)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = s.Run()
+	fmt.Print(err)
 }
 
-func logger(arg interface{}) interface{} {
-	body := arg.(amqp091.Delivery).Body
-	res := make(map[string]interface{})
+type body struct {
+	Time time.Time
+	Text string
+}
 
-	json.Unmarshal(body, &res)
-	//fibbo, err := util.Fibonacci(int(res["n"].(float64)))
-	//if err != nil {
-	//	log.Printf("Error: %s", err)
-	//}
+func logger(m []byte) any {
+	var res body
+	json.Unmarshal(m, &res)
 	log.Printf("Logging the results %+v", res)
 	return nil
 }
