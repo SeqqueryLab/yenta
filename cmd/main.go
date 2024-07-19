@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/SeqqueryLab/yenta"
+	"github.com/utubun/yenta"
 )
 
 func main() {
