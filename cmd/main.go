@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/utubun/yenta"
@@ -15,7 +16,8 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println("New service is created")
-	err = s.Configure("internal/assets/config.json")
+	b, _ := os.ReadFile("internal/assets/config.json")
+	err = s.Configure(b)
 	if err != nil {
 		log.Fatal(err)
 	}

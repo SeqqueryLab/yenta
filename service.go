@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -33,14 +32,9 @@ func New(url string) (*Service, error) {
 }
 
 // Configure
-func (s *Service) Configure(path string) error {
+func (s *Service) Configure(b []byte) error {
 	// define config variable
 	var config *Config
-	// read config file
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
 	// read the data
 	json.Unmarshal(b, &config)
 	// check that exchange is not empty
@@ -110,7 +104,6 @@ func (s *Service) Post(exchange string, keys []string, mandatory, immediate bool
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	for _, key := range keys {
-		log.Printf("Sending the message %s with the routing key %s to the exchange %s\n", string(body), key, exchange)
 		err := ch.PublishWithContext(
 			ctx,
 			exchange,
@@ -158,13 +151,13 @@ func (s *Service) Get(consumer, queue string, autoack, exclusive, nolocal, nowai
 	if err != nil {
 		return fmt.Errorf("failed to consume from queue %s: %s", queue, err)
 	}
-	log.Println("start to receive the messages")
 
-	for m := range msg {
-		body := m.Body
-		go fun(body)
-	}
+	go func(m <-chan amqp.Delivery) {
+		for val := range m {
+			body := val.Body
+			go fun(body)
+		}
+	}(msg)
 
-	log.Println("exit")
 	return nil
 }
