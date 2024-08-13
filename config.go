@@ -15,11 +15,11 @@ type Config struct {
 
 // Binding
 type Binding struct {
-	Exchange string
-	Queue    string
-	Keys     []string
-	NoWait   bool
-	Arg      amqp.Table
+	Exchange string     `json:"exchange"`
+	Queue    string     `json:"queue"`
+	Keys     []string   `json:"keys"`
+	NoWait   bool       `json:"nowait"`
+	Arg      amqp.Table `json:"arg"`
 }
 
 // ConfigJSON

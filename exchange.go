@@ -4,13 +4,13 @@ import amqp "github.com/rabbitmq/amqp091-go"
 
 // Exchange
 type Exchange struct {
-	Name       string
-	Kind       string
-	Durable    bool
-	AutoDelete bool
-	Internal   bool
-	NoWait     bool
-	Arg        amqp.Table
+	Name       string     `json:"name"`
+	Kind       string     `json:"kind"`
+	Durable    bool       `json:"durable"`
+	AutoDelete bool       `json:"autodelete"`
+	Internal   bool       `json:"internal"`
+	NoWait     bool       `json:"nowait"`
+	Arg        amqp.Table `json:"arg"`
 }
 
 func (s *Service) DeclareExchange(name, kind string, durable, autoDelete, internal, noWait bool, arg amqp.Table) error {

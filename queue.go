@@ -8,14 +8,14 @@ import (
 
 // Queue
 type Queue struct {
-	Exchange   string
-	Name       string
-	Durable    bool
-	AutoDelete bool
-	Exclusive  bool
-	NoWait     bool
-	Arg        amqp.Table
-	Keys       []string
+	Exchange   string     `json:"exchange"`
+	Name       string     `json:"name"`
+	Durable    bool       `json:"durable"`
+	AutoDelete bool       `json:"autodelete"`
+	Exclusive  bool       `json:"exclusive"`
+	NoWait     bool       `json:"nowait"`
+	Arg        amqp.Table `json:"arg"`
+	Keys       []string   `json:"keys"`
 }
 
 // Declare Queue
